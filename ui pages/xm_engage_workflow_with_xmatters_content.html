@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null" trim="false">
+
+  <!-- The following UI Scripts must be called in the order as they appear below -->
+
+  <!-- UI Scripts dependent on the xMatters application -->
+  <script src="x_xma_xmatters.angular.min.jsdbx"></script>
+  <script src="x_xma_xmatters.angular-ui-bootstrap.min.jsdbx"></script>
+
+  <!-- Engage Workflow packaged script files -->
+  <script src="x_xma_xmatters.app_engage_workflow.jsdbx"></script>
+
+  <!-- UI Scripts dependent on the xMatters application -->
+  <script src="x_xma_xmatters.angular.translate.min.jsdbx"></script>
+
+  <!-- Engage Workflow packaged script files -->
+  <script src="x_xma_xmatters.glideajax_engage_workflow.jsdbx"></script>
+  <script src="x_xma_xmatters.service_engage_workflow.jsdbx"></script>
+  <script src="x_xma_xmatters.location_engage_workflow.jsdbx"></script>
+  <script src="x_xma_xmatters.provider_engage_workflow.jsdbx"></script>
+
+  <!-- UI Scripts dependent on the xMatters application -->
+  <script src="x_xma_xmatters.ng-tags-input.min.jsdbx"></script>
+  <script src="x_xma_xmatters.moment.min.jsdbx"></script>
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet"></link>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"></link>
+  <style>
+    body {
+      font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
+      padding-top: 0;
+    }
+
+    .xm-label {
+      font-size: 13px;
+      font-weight: normal;
+    }
+
+    .xm-legal-label {
+      font-size: 13px;
+      font-weight: normal;
+      margin-top: .5px;
+      margin-bottom: 0px;
+      color: #808080;
+    }
+
+    input.xm-tracked.ng-dirty,
+    textarea.xm-tracked.ng-dirty {
+      border: 1px orange solid;
+    }
+
+    form.ng-submitted input.ng-invalid,
+    form.ng-submitted textarea.ng-invalid {
+      border: 1px red solid;
+    }
+
+    .big-checkbox {
+      width: 30px;
+      height: 30px;
+    }
+
+    a.xm-help {
+      margin-left: 5px;
+      display: inline-block !important;
+    }
+
+    .ng-dirty .tags {
+      /**border-color: orange; **/
+    }
+
+    .xm-tags-input-group .input-group-btn .btn {
+      height: 34px;
+    }
+
+    .tags {
+      border: 1px solid #ccc !important;
+    }
+
+    form.ng-submitted .ng-invalid .tags {
+      border-color: red !important;
+    }
+
+    tags-input .tags {
+      box-shadow: none !important;
+    }
+
+    tags-input .tags .tag-item {
+      background: #445465;
+      border: 0;
+    }
+
+    tags-input .tags .tag-item .remove-button {
+      color: white;
+    }
+
+    tags-input .tags .tag-item .remove-button:hover {
+      color: #bec1c6;
+      ;
+    }
+
+    tags-input .tags .tag-item.selected {
+      background-color: #ae1b1f;
+    }
+
+    .xm-input-group-btn {
+      background-color: #f6f6f6;
+      border: solid 1px #cccccc;
+      width: 106px !important;
+    }
+
+    .xm-left {
+      float: left;
+    }
+
+    .xm-right {
+      float: right;
+    }
+
+    .xm-tag-feedback {
+      right: 10px;
+    }
+
+    .xm-error {
+      color: red;
+      font-size: 13px;
+    }
+
+    .xm-btn-default,
+    .xm-btn-default:focus,
+    .xm-btn-default:hover {
+      font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
+      color: #343d47;
+      background-color: rgba(255, 255, 255, 0.45);
+      border-color: #bdc0c4;
+    }
+
+    tags-input .tags .tag-item {
+      font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
+    }
+
+    tags-input .tags .input {
+      font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
+    }
+
+    tags-input .autocomplete .suggestion-item {
+      font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
+    }
+
+    h4.xm-header {
+      font-size: 21px;
+      font-weight: normal;
+      margin-top: 0;
+    }
+
+    .xm-left-icon {
+      margin-right: 5px;
+    }
+
+    .xm-right-icon {
+      margin-left: 0;
+    }
+
+    .xm-right-icon .remove-button .fa {
+      font-size: 14px;
+      vertical-align: text-top;
+    }
+
+    .form-control-feedback .fa {
+      color: rgb(52, 61, 71);
+    }
+
+    .xm-success-message {
+      max-width: 80%;
+      min-width: 375px;
+      padding: 0 40px;
+    }
+
+    .xm-cancel-button {
+      margin-left: 15px;
+    }
+
+    .compact tags-input .tags .input {
+      height: 16px;
+      font-size: 12px;
+    }
+
+    .compact tags-input .tags .tag-item {
+      height: 16px;
+      line-height: 15px;
+      font-size: 12px;
+    }
+
+    .compact .form-control-feedback {
+      line-height: 25px;
+    }
+  </style>
+  <div id="engage" ng-app="xm.engage-xm" class="container-fluid" ng-cloak="">
+    <div ng-controller="engageCtlr">
+      <div class="panel" ng-show="!is_finished">
+        <h4 class="xm-header">{{ 'ENGAGE_XM.TITLE' | translate }}</h4>
+        <form name="engageXMForm" novalidate="">
+          <div class="row">
+            <div class="form-group col-md-12 has-feedback" ng-class="engageXMForm.recipients.$error.required ? 'is-required' : 'is-filled'">
+              <span class="required-marker"></span>
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.RECIPIENTS' | translate }}</label>
+              <div class="input-group xm-tags-input-group">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-secondary xm-input-group-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="xm-left">{{ activeRecipientType.label | translate }}</span>
+                    <span class="xm-right">
+                      <i class="fa fa-chevron-down"></i>
+                    </span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li ng-repeat="rType in recipientTypes">
+                      <a href="#" ng-click="selectRecipientType( $index )">{{ rType.label | translate }}</a>
+                    </li>
+                  </ul>
+                </span>
+                <tags-input ng-model="recipients" id="recipients" name="recipients" required="required" template="x_xma_xmatters_xm_engage_recipient_template.do?sysparm_nostack=true">
+                  <auto-complete source="activeRecipientType.typeahead($query)" max-results-to-show="200"></auto-complete>
+                </tags-input>
+              </div>
+              <span class="form-control-feedback xm-tag-feedback" ng-show="xm_search_state.isSearching">
+                <i class="fa fa-spinner fa-spin fa-fw"></i>
+              </span>
+              <div class="xm-error" ng-messages="engageXMForm.recipients.$error" ng-show="engageXMForm.$submitted">
+                <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div ng-class="displayDateTime(notification_type) ? 'form-group col-sm-4' : 'form-group col-sm-12'">
+              <span class="required-marker"></span>
+              <label for="notification_type">Type</label>
+              <select class="form-control" id="notification-type" ng-model="notification_type" name="notification_type" required="required">
+                <option value="None">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
+                <option ng-repeat="type in notification_types" value="{{type.value}}">{{ type.label | translate }}</option>
+              </select>
+            </div>
+
+            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(notification_type)">
+              <label class="xm-label">Date</label>
+
+              <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="dd-MMMM-yyyy" ng-model="meeting_datetime" is-open="calendarPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="openCalendarPopup()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+              </p>
+            </div>
+            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(notification_type)">
+              <label class="xm-label">Time</label>
+              <uib-timepicker ng-model="meeting_datetime" ng-change="changed()" show-spinners="false"></uib-timepicker>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="form-group col-sm-12">
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.CONFERENCE_BRIDGE' | translate }}</label>
+              <select class="form-control" ng-model="conference_bridge" id="engage_conf_select">
+                <option value="None" class="conf-engage-none">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
+                <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.Hosted_Category' | translate }}" ng-if="displayXMConfBridge()">
+                  <option ng-repeat="bridgeOpt in hosted_conference_bridge_options" value="{{bridgeOpt.value}}" class="conf-engage-xm-hosted">{{ bridgeOpt.label | translate }}</option>
+                </optgroup>
+                <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.External_Category' | translate }}" ng-if="external_conference_bridge_options.length > 0">
+                  <option ng-repeat="bridgeOpt in external_conference_bridge_options" value="{{bridgeOpt.value}}" id="conf_engage_external" class="conf_engage_external">{{ bridgeOpt.label | translate }}</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-sm-3" id='passcode_div' ng-if="isExternalConferenceBridge(conference_bridge)">
+              <span class="required-marker"></span>
+              <label class="xm-label">Passcode</label>
+              <input type="text" class="form-control" ng-model="passcode" ng-value="displayPasscode(conference_bridge)"  id="passcode" name="passcode" ng-maxlength="25" />
+              <div class="xm-error" ng-messages="engageXMForm.passcode.$error" ng-show="engageXMForm.$submitted">
+                <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
+                <div ng-message="maxlength">{{ 'ENGAGE_XM.ERROR.MAX_LENGTH' | translate:'{ max_length: 25 }' }}</div>
+              </div>
+            </div>
+
+            <div class="form-group col-sm-9" ng-if="isExternalConferenceBridge(conference_bridge)">
+              <label class="xm-label">Meeting Link</label>
+              <input type="text" class="form-control" ng-model="meetinglink" ng-value="displayMeetingLink(conference_bridge)" id="meetinglink" name="meetinglink" ng-maxlength="2000" />
+            </div>
+
+          </div>
+
+          <div class="row">
+            <div class="form-group col-md-12" ng-class="engageXMForm.message.$error">
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.MESSAGE' | translate }}</label>
+              <textarea class="form-control" value="{{message}}" ng-model="message" id="message" name="message" ng-maxlength="2000" />
+              <div class="xm-error" ng-messages="engageXMForm.message.$error" ng-show="engageXMForm.$submitted">
+						<div ng-message="maxlength">{{ 'ENGAGE_XM.ERROR.MAX_LENGTH' | translate:'{ max_length: 2000 }' }}</div>
+					</div>
+				<div>
+					<p class="xm-legal-label" ng-bind-html="displayLegalStatement()"></p>
+				</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-4">
+					<button class="btn btn-default xm-btn-default" ng-click="submit()">{{ 'ENGAGE_XM.BUTTON.SUBMIT' | translate }}</button>
+					<button class="btn btn-default xm-btn-default xm-cancel-button" type="button" ng-click="cancel()">{{ 'ENGAGE_XM.BUTTON.CANCEL' | translate }}</button>
+				</div>
+			</div>
+
+		</form>
+		</div>
+		<div class="panel" ng-if="is_finished">
+			<h4 class="xm-header">{{ 'ENGAGE_XM.TITLE' | translate }}</h4>
+			<div class="row">
+				<div class="col-md-8 xm-success-message">
+					<p>{{ 'ENGAGE_XM.MESSAGE.SUCCESS' | translate }}</p>
+				</div>
+			</div>
+			<a href="{{engage_url}}" target="_top" class="btn btn-default xm-btn-default">{{ 'ENGAGE_XM.BUTTON.VIEW_RECORD' | translate }}</a>
+		</div>
+	</div>
+</div>
+</j:jelly>

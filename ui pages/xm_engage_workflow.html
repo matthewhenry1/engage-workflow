@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+<style>
+/* Extra small devices (phones, less than 768px) */
+/* No media query since this is the default in Bootstrap */
+.xm-dialog-form {
+	width: 400px;
+	height: 650px;
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+	.xm-dialog-form {
+		width: 500px;
+		height: 650px;
+	}
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+	.xm-dialog-form {
+		width: 700px;
+		height: 500px;
+	}
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+	.xm-dialog-form {
+		width: 750px;
+		height: 500px;
+	}
+}
+.xm-embed-iframe {
+  height: 100%;
+}
+</style>
+	<div class="xm-dialog-form">
+		<div class="embed-responsive xm-embed-iframe">
+			<iframe name="dialog_frame" id="dialog_frame" src="/x_xma_xmatters_xm_engage_workflow_content.do?sysparm_nostack=true&amp;incident_id=${HTML:sysparm_sysID}" class="embed-responsive-item"></iframe>
+		</div>
+	</div>
+    <script>
+	(function() {
+		var childMessageListener = function(event) {
+			if( event.origin !== window.location.origin ) {
+				jslog("Received message from unexpected origin: " + event.origin);
+			   return;
+			} else {
+				var data = event.data;
+				if(data.type === 'DIALOG_CLOSE') {
+					if(data.message) {
+						g_form.addInfoMessage(data.message);
+					}
+					GlideDialogWindow.get().destroy();
+				} else {
+					jslog("Unhandled message type: " + data.type);
+				}
+			}
+		}
+
+		if(window.addEventListener) {
+			addEventListener('message', childMessageListener, false);
+		} else {
+			attachEvent("onmessage", childMessageListener);
+		}
+	})();
+	</script>
+</j:jelly>
