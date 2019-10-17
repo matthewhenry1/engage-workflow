@@ -119,9 +119,6 @@ engageApp.controller('engageCtlr',
     // misc.
     $scope.xm_conf_bridge_enable = OptionsProvider.xm_conf_bridge_enable;
     $scope.legal_statement = OptionsProvider.legal_statement;
-    console.log("Received: " + $scope.legal_statement);
-    // 	$scope.html = '<ul><li>render me please</li></ul>';
-    // $scope.trustedHtml = $sce.trustAsHtml($scope.legal_statement);
 
     $scope.recipientTypes = [{
         "label": "ENGAGE_XM.OPTIONS.RECIPIENT_TYPE.people",
@@ -152,6 +149,14 @@ engageApp.controller('engageCtlr',
         }
       }
       return isExternal;
+    };
+
+    $scope.displayLegalStatement = function() {
+      var trustedHTML = '';
+      if ($scope.legal_statement.length > 0){
+          trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
+      }
+      return trustedHTML;
     };
 
     $scope.displayPasscode = function(conference) {
@@ -215,8 +220,6 @@ engageApp.controller('engageCtlr',
           }
 
         } else if (meeting_builder_type == 'dynamic' && matchForDynamic) {
-
-          console.log('type is dynamic, proceeding');
 
           var dynamic_meeting_builder_url = $scope.dynamic_meeting_builder_url[0].value;
           var dynamic_meeting_builder_profile = $scope.dynamic_meeting_builder_profile[0].value;
