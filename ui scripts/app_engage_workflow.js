@@ -67,7 +67,6 @@ engageApp.controller('engageCtlr',
     $scope.passcode = '';
     $scope.meetinglink = '';
     $scope.legal_statement = '';
-    $scope.notification_type = 'None';
 
     // Date Required Data Start
     $scope.meeting_datetime = new Date();
@@ -269,12 +268,11 @@ engageApp.controller('engageCtlr',
       return display;
     };
 
-    /**
-     * Changes the active recipient type based on the input group action dropdown selection
-     *
-     * @param  {Integer} selectedType
-     *         index of the selected recipient option
-     */
+    $scope.isTypeRequired = function (notification_type){
+      console.log('Notification Type: ' + notification_type);
+      return "true";
+    }
+
     $scope.selectRecipientType = function(selectedIndex) {
       $scope.activeRecipientType = $scope.recipientTypes[selectedIndex];
     };
@@ -293,15 +291,12 @@ engageApp.controller('engageCtlr',
       closeDialog();
     };
 
-    /**
-     * Submits the engageXMForm form, and if valid, tries to create a new Engage with xMatters record via
-     * the xMattersAjaxEngage client callable script include.
-     */
+
     $scope.submit = function() {
       $scope.engageXMForm.$setSubmitted(true);
       if ($scope.engageXMForm.$invalid) {
-        jslog('The form will not be submitted in an invalid state');
-        jslog($scope.engageXMForm);
+        console.log('The form will not be submitted in an invalid state notification_type. ' + JSON.stringify($scope.engageXMForm.notification_type.$error));
+        console.log('The form will not be submitted in an invalid state recipients ' + JSON.stringify($scope.engageXMForm.recipients.$error));
       } else {
         var recipientTargets = [];
         for (var i = 0; i < $scope.recipients.length; i++) {

@@ -23,8 +23,10 @@
   <script src="x_xma_xmatters.ng-tags-input.min.jsdbx"></script>
   <script src="x_xma_xmatters.moment.min.jsdbx"></script>
 
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet"></link>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"></link>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+  </link>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  </link>
   <style>
     body {
       font-family: SourceSansPro-Regular, SourceSansPro, "Helvetica Neue", Arial;
@@ -217,7 +219,7 @@
                     </li>
                   </ul>
                 </span>
-                <tags-input ng-model="recipients" id="recipients" name="recipients" required="required" template="x_xma_xmatters_xm_engage_recipient_template.do?sysparm_nostack=true">
+                <tags-input ng-model="recipients" id="recipients" name="recipients" required="required" template="x_xma_xmatters_xm_engage_workflow_recipient_template.do?sysparm_nostack=true">
                   <auto-complete source="activeRecipientType.typeahead($query)" max-results-to-show="200"></auto-complete>
                 </tags-input>
               </div>
@@ -231,13 +233,18 @@
           </div>
 
           <div class="row">
-            <div ng-class="displayDateTime(notification_type) ? 'form-group col-sm-4' : 'form-group col-sm-12'">
-              <span class="required-marker"></span>
-              <label for="notification_type">Type</label>
-              <select class="form-control" id="notification-type" ng-model="notification_type" name="notification_type" required="required">
-                <option value="None">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
-                <option ng-repeat="type in notification_types" value="{{type.value}}">{{ type.label | translate }}</option>
-              </select>
+            <div ng-class="engageXMForm.notification_type.$error.required ? 'is-required' : 'is-filled'">
+              <div ng-class="displayDateTime(notification_type) ? 'form-group col-sm-4' : 'form-group col-sm-12'">
+                <span class="required-marker"></span>
+                <label class="xm-label" for="notification_type">Type</label>
+                <select class="form-control" id="notification-type" ng-model="notification_type" name="notification_type" required="required">
+                  <option value="">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
+                  <option ng-repeat="type in notification_types" value="{{type.value}}">{{ type.label | translate }}</option>
+                </select>
+                <div class="xm-error" ng-messages="engageXMForm.notification_type.$error" ng-show="engageXMForm.$submitted">
+                  <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
+                </div>
+              </div>
             </div>
 
             <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(notification_type)">
@@ -256,10 +263,10 @@
             </div>
           </div>
 
-
           <div class="row">
             <div class="form-group col-sm-12">
               <label class="xm-label">{{ 'ENGAGE_XM.LABEL.CONFERENCE_BRIDGE' | translate }}</label>
+              <!-- Insert below if desired to create multi-select multiple="multiple" -->
               <select class="form-control" ng-model="conference_bridge" id="engage_conf_select">
                 <option value="None" class="conf-engage-none">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
                 <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.Hosted_Category' | translate }}" ng-if="displayXMConfBridge()">
@@ -271,12 +278,11 @@
               </select>
             </div>
           </div>
-
           <div class="row">
             <div class="form-group col-sm-3" id='passcode_div' ng-if="isExternalConferenceBridge(conference_bridge)">
               <span class="required-marker"></span>
               <label class="xm-label">Passcode</label>
-              <input type="text" class="form-control" ng-model="passcode" ng-value="displayPasscode(conference_bridge)"  id="passcode" name="passcode" ng-maxlength="25" />
+              <input type="text" class="form-control" ng-model="passcode" ng-value="displayPasscode(conference_bridge)" id="passcode" name="passcode" ng-maxlength="25" />
               <div class="xm-error" ng-messages="engageXMForm.passcode.$error" ng-show="engageXMForm.$submitted">
                 <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
                 <div ng-message="maxlength">{{ 'ENGAGE_XM.ERROR.MAX_LENGTH' | translate:'{ max_length: 25 }' }}</div>
