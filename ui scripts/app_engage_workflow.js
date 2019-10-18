@@ -71,6 +71,17 @@ engageApp.controller('engageCtlr',
     // Date Required Data Start
     $scope.meeting_datetime = new Date();
 
+    $scope.selectChanged = function() {
+      alert("value changed-->" + $scope.someVal);
+      if ($scope.someVal == 1) {
+        $scope.otherFunction();
+      }
+    };
+
+    $scope.otherFunction = function() {
+      alert("in the other function");
+    };
+
     $scope.dateOptions = {
       // if desired, set min and max selectable dates
       // 	//maxDate: new Date(),
@@ -152,8 +163,8 @@ engageApp.controller('engageCtlr',
 
     $scope.displayLegalStatement = function() {
       var trustedHTML = '';
-      if ($scope.legal_statement.length > 0){
-          trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
+      if ($scope.legal_statement.length > 0) {
+        trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
       }
       return trustedHTML;
     };
@@ -230,9 +241,7 @@ engageApp.controller('engageCtlr',
           } else {
             meetingURL = dynamic_meeting_builder_url;
           }
-        }  else {
-          console.log('No Match on meeting_builder_type: ' + meeting_builder_type);
-        }
+        } 
       }
 
       console.log('Returning: ' + meetingURL);
@@ -267,11 +276,6 @@ engageApp.controller('engageCtlr',
 
       return display;
     };
-
-    $scope.isTypeRequired = function (notification_type){
-      console.log('Notification Type: ' + notification_type);
-      return "true";
-    }
 
     $scope.selectRecipientType = function(selectedIndex) {
       $scope.activeRecipientType = $scope.recipientTypes[selectedIndex];
@@ -312,7 +316,6 @@ engageApp.controller('engageCtlr',
           "initiator_display_name": g_user.getFullName(),
           "initiator_username": g_user.userName,
           "passcode": $scope.passcode,
-          "webex": $scope.webex,
           "meeting_datetime": $scope.meeting_datetime,
           "meetinglink": $scope.meetinglink,
           "notification_type": $scope.notification_type
