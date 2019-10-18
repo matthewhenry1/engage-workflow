@@ -6,6 +6,7 @@
   <!-- UI Scripts dependent on the xMatters application -->
   <script src="x_xma_xmatters.angular.min.jsdbx"></script>
   <script src="x_xma_xmatters.angular-ui-bootstrap.min.jsdbx"></script>
+  <script src="x_xma_xmatters.angular.min.material.jsdbx"></script>
 
   <!-- Engage Workflow packaged script files -->
   <script src="x_xma_xmatters.app_engage_workflow.jsdbx"></script>
@@ -23,6 +24,7 @@
   <script src="x_xma_xmatters.ng-tags-input.min.jsdbx"></script>
   <script src="x_xma_xmatters.moment.min.jsdbx"></script>
 
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.css" />
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
   </link>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -293,7 +295,24 @@
               <label class="xm-label">Meeting Link</label>
               <input type="text" class="form-control" ng-model="meetinglink" ng-value="displayMeetingLink(conference_bridge)" id="meetinglink" name="meetinglink" ng-maxlength="2000" />
             </div>
+          </div>
 
+          <div class="row">
+            <div class="form-group col-md-12">
+              <md-input-container>
+                <label>Communication</label>
+                <md-select placeholder="Communication" ng-model="someVal" multiple="multiple" id="someVal">
+                  <md-optgroup label="Conference Bridge">
+                    <md-option value="WebEx">WebEx</md-option>
+                    <md-option value="MeetingRoom">Personal Meeting Room (WebEx)</md-option>
+                  </md-optgroup>
+                  <md-optgroup label="Chat">
+                    <md-option value="Slack">Slack</md-option>
+                    <md-option value="Teams">MS Teams</md-option>
+                  </md-optgroup>
+                </md-select>
+              </md-input-container>
+            </div>
           </div>
 
           <div class="row">
