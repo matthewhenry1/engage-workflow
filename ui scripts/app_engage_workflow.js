@@ -21,7 +21,12 @@ engageApp.config(function($translateProvider) {
         RECIPIENTS: 'Recipients',
         CONFERENCE_BRIDGE: 'Conference Bridge',
         SUBJECT: 'Subject',
-        MESSAGE: 'Message'
+        MESSAGE: 'Message',
+        TYPE: 'Type',
+        DATE: 'Date',
+        TIME: 'Time',
+        PASSCODE: 'Passcode',
+        MEETING_LINK: 'Meeting Link'
       },
       BUTTON: {
         SUBMIT: 'Submit',
@@ -64,22 +69,21 @@ engageApp.controller('engageCtlr',
     $scope.message = '';
     $scope.recipients = [];
     $scope.conference_bridge = 'None';
-    $scope.passcode = '';
-    $scope.meetinglink = '';
+
+    // 	More information on why the following primitives required a .value https://github.com/angular/angular.js/wiki/Understanding-Scopes
+    $scope.meeting_link = {
+      "value": ""
+    };
+
+    $scope.passcode = {
+      "value": ""
+    };
+
     $scope.legal_statement = '';
 
     // Date Required Data Start
-    $scope.meeting_datetime = new Date();
-
-    $scope.selectChanged = function() {
-      alert("value changed-->" + $scope.someVal);
-      if ($scope.someVal == 1) {
-        $scope.otherFunction();
-      }
-    };
-
-    $scope.otherFunction = function() {
-      alert("in the other function");
+    $scope.date_time = {
+      "value": new Date()
     };
 
     $scope.dateOptions = {
@@ -163,59 +167,25 @@ engageApp.controller('engageCtlr',
 
     $scope.displayLegalStatement = function() {
       var trustedHTML = '';
-      if ($scope.legal_statement.length > 0) {
+      if ($scope.legal_statement[0].length > 0) {
         trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
       }
       return trustedHTML;
     };
 
-    $scope.displayPasscode = function(conference) {
+    $scope.updateMeetingFields = function(conference) {
 
-      var passCode = '';
-
-      if ($scope.meeting_builder_enable[0].value == "true") {
-
-        var meeting_builder_type = $scope.meeting_builder_type[0].value;
-
-        // leverage the meeting link table
-        if (meeting_builder_type == 'table') {
-
-          console.log('Received meetingURL: ' + JSON.stringify($scope.meeting_table));
-          if ($scope.meeting_table.$$state.value) {
-            console.log('has $scope.meeting_table.value');
-            for (var i = 0; i < $scope.meeting_table.$$state.value.length; i++) {
-              console.log('User has selected conference: ' + conference);
-              console.log('Comparing against table value of ' + $scope.meeting_table.$$state.value[i].conference_bridge_name);
-
-              if ($scope.meeting_table.$$state.value[i].conference_bridge_name.toLowerCase() === conference.toLowerCase()) {
-                passCode = $scope.meeting_table.$$state.value[i].passcode;
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      console.log('Returning: ' + passCode);
-
-      return passCode;
-    };
-
-
-    $scope.displayMeetingLink = function(conference) {
-
-      var meetingURL = '';
-
+      var clearFields = true;
       var matchForDynamic = (conference.toLowerCase() === $scope.dynamic_meeting_builder_ext_conf_bridge[0].value.toLowerCase());
 
+      // -- PASSCODE START --
       if ($scope.meeting_builder_enable[0].value == "true") {
 
         var meeting_builder_type = $scope.meeting_builder_type[0].value;
-
         // leverage the meeting link table
         if (meeting_builder_type == 'table') {
 
-          console.log('Received meetingURL: ' + JSON.stringify($scope.meeting_table));
+          console.log('Received meeting table data: ' + JSON.stringify($scope.meeting_table));
           if ($scope.meeting_table.$$state.value) {
             console.log('has $scope.meeting_table.value');
             for (var i = 0; i < $scope.meeting_table.$$state.value.length; i++) {
@@ -223,39 +193,48 @@ engageApp.controller('engageCtlr',
               console.log('Comparing against table value of ' + $scope.meeting_table.$$state.value[i].conference_bridge_name);
 
               if ($scope.meeting_table.$$state.value[i].conference_bridge_name.toLowerCase() === conference.toLowerCase()) {
-                meetingURL = $scope.meeting_table.$$state.value[i].meeting_url;
+                $scope.passcode.value = $scope.meeting_table.$$state.value[i].passcode;
+                $scope.meeting_link.value = $scope.meeting_table.$$state.value[i].meeting_url;
+                clearFields = false;
                 break;
               }
             }
           }
-
         } else if (meeting_builder_type == 'dynamic' && matchForDynamic) {
 
           var dynamic_meeting_builder_url = $scope.dynamic_meeting_builder_url[0].value;
           var dynamic_meeting_builder_profile = $scope.dynamic_meeting_builder_profile[0].value;
 
           if (dynamic_meeting_builder_profile == 'first_name.last_name') {
-            meetingURL = dynamic_meeting_builder_url + g_user.firstName + '.' + g_user.lastName;
+            $scope.meeting_link.value = dynamic_meeting_builder_url + g_user.firstName + '.' + g_user.lastName;
+            clearFields = false;
+
           } else if (dynamic_meeting_builder_profile == 'user_name') {
-            meetingURL = dynamic_meeting_builder_url + g_user.userName;
+            $scope.meeting_link.value = dynamic_meeting_builder_url + g_user.userName;
+            clearFields = false;
+
           } else {
-            meetingURL = dynamic_meeting_builder_url;
+            $scope.meeting_link.value = dynamic_meeting_builder_url;
+            clearFields = false;
           }
-        } 
-      }
+        }
 
-      console.log('Returning: ' + meetingURL);
+        // Since the field changed we must clear the fields if no new value was set
+        if (clearFields) {
+          $scope.passcode.value = '';
+          $scope.meeting_link.value = '';
+        }
 
-      return meetingURL;
+      } // CLOSING BRACE ON THE ENABLE
     };
 
-    $scope.displayDateTime = function(notification_type) {
+    $scope.displayDateTime = function(type) {
       console.log("***displayDateTime " + JSON.stringify($scope.notification_types_to_display_date_time));
       var display = false;
 
-      if (notification_type !== '' && typeof notification_type !== 'undefined') {
+      if (type !== '' && typeof type !== 'undefined') {
         for (var i = 0; i < $scope.notification_types_to_display_date_time.length; i++) {
-          if (notification_type.toLowerCase() === $scope.notification_types_to_display_date_time[i].label.toLowerCase()) {
+          if (type.toLowerCase() === $scope.notification_types_to_display_date_time[i].label.toLowerCase()) {
             display = true;
           }
         }
@@ -267,7 +246,7 @@ engageApp.controller('engageCtlr',
     $scope.displayXMConfBridge = function() {
       console.log("***xm_conf_bridge_enable " + JSON.stringify($scope.xm_conf_bridge_enable));
       var display = false;
-      if ($scope.xm_conf_bridge_enable.length > 0) {
+      if ($scope.xm_conf_bridge_enable[0].length > 0) {
         if ($scope.xm_conf_bridge_enable[0].value === true) {
 
           display = true;
@@ -299,8 +278,8 @@ engageApp.controller('engageCtlr',
     $scope.submit = function() {
       $scope.engageXMForm.$setSubmitted(true);
       if ($scope.engageXMForm.$invalid) {
-        console.log('The form will not be submitted in an invalid state notification_type. ' + JSON.stringify($scope.engageXMForm.notification_type.$error));
-        console.log('The form will not be submitted in an invalid state recipients ' + JSON.stringify($scope.engageXMForm.recipients.$error));
+        console.log('The form will not be submitted in an invalid state, error on Type field true/false: ' + JSON.stringify($scope.engageXMForm.type.$error));
+        console.log('The form will not be submitted in an invalid state error on Recipients field true/false: ' + JSON.stringify($scope.engageXMForm.recipients.$error));
       } else {
         var recipientTargets = [];
         for (var i = 0; i < $scope.recipients.length; i++) {
@@ -315,10 +294,10 @@ engageApp.controller('engageCtlr',
           "incident_id": $scope.incident_id,
           "initiator_display_name": g_user.getFullName(),
           "initiator_username": g_user.userName,
-          "passcode": $scope.passcode,
-          "meeting_datetime": $scope.meeting_datetime,
-          "meetinglink": $scope.meetinglink,
-          "notification_type": $scope.notification_type
+          "type": $scope.type,
+          "date_time": $scope.date_time.value,
+          "meeting_link": $scope.meeting_link.value,
+          "passcode": $scope.passcode.value
         };
 
         var ga = new GlideAjax('xMattersAjaxEngageWorkflow');
