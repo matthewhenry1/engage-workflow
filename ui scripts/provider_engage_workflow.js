@@ -16,17 +16,17 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
       external_conference_bridges: [],
 
       // meeting builder
-      meeting_builder_enable: {},
-      meeting_builder_type: {},
+      meeting_builder_enable: [],
+      meeting_builder_type: [],
 
       // if dynamic meeting builder
-      dynamic_meeting_builder_ext_conf_bridge: {},
-      dynamic_meeting_builder_url: {},
-      dynamic_meeting_builder_profile: {},
+      dynamic_meeting_builder_ext_conf_bridge: [],
+      dynamic_meeting_builder_url: [],
+      dynamic_meeting_builder_profile: [],
 
       // misc.
-      xm_conf_bridge_enable: {},
-      legal_statement: {}
+      xm_conf_bridge_enable: [],
+      legal_statement: []
     };
 
     var buildOption = function(value, translationPrefix) {
@@ -111,7 +111,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     meetingBuilderEnable.addParam('sysparm_name', 'getMeetingBuilderEnable');
     meetingBuilderEnable.send().then(function(resp) {
       if (resp.success) {
-        options.meeting_builder_enable = buildOption(resp.data);
+        options.meeting_builder_enable.push(buildOption(resp.data));
       }
     });
 
@@ -119,7 +119,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     meetingBuilderType.addParam('sysparm_name', 'getMeetingBuilderType');
     meetingBuilderType.send().then(function(resp) {
       if (resp.success) {
-        options.meeting_builder_type = buildOption(resp.data);
+        options.meeting_builder_type.push(buildOption(resp.data));
       }
     });
 
@@ -127,7 +127,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     dynamicMeetingBuilderExternalConfBridge.addParam('sysparm_name', 'getDynamicMeetingBuilderExternalConfBridge');
     dynamicMeetingBuilderExternalConfBridge.send().then(function(resp) {
       if (resp.success) {
-        options.dynamic_meeting_builder_ext_conf_bridge = buildOption(resp.data);
+        options.dynamic_meeting_builder_ext_conf_bridge.push(buildOption(resp.data));
       }
     });
 
@@ -135,7 +135,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     dynamicMeetingBuilderURL.addParam('sysparm_name', 'getDynamicMeetingBuilderURL');
     dynamicMeetingBuilderURL.send().then(function(resp) {
       if (resp.success) {
-        options.dynamic_meeting_builder_url = buildOption(resp.data);
+        options.dynamic_meeting_builder_url.push(buildOption(resp.data));
       }
     });
 
@@ -143,7 +143,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     dynamicMeetingBuilderProfile.addParam('sysparm_name', 'getMeetingBuilderDynamicProfile');
     dynamicMeetingBuilderProfile.send().then(function(resp) {
       if (resp.success) {
-        options.dynamic_meeting_builder_profile = buildOption(resp.data);
+        options.dynamic_meeting_builder_profile.push(buildOption(resp.data));
       }
     });
 
@@ -151,7 +151,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     xMConfBridgeEnable.addParam('sysparm_name', 'getXMConfBridgeEnable');
     xMConfBridgeEnable.send().then(function(resp) {
       if (resp.success) {
-        options.xm_conf_bridge_enable = buildOption(resp.data);
+        options.xm_conf_bridge_enable.push(buildOption(resp.data));
       }
     });
 
@@ -159,7 +159,7 @@ angular.module('xm.options-provider', ['xm.glide-ajax', 'xm.location-service'])
     legalStatement.addParam('sysparm_name', 'getLegalStatement');
     legalStatement.send().then(function(resp) {
       if (resp.success) {
-        options.legal_statement = buildOption(resp.data);
+        options.legal_statement.push(buildOption(resp.data));
       }
     });
 
