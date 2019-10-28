@@ -167,7 +167,7 @@ engageApp.controller('engageCtlr',
 
     $scope.displayLegalStatement = function() {
       var trustedHTML = '';
-      if ($scope.legal_statement[0].length > 0) {
+      if ($scope.legal_statement.length > 0) {
         trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
       }
       return trustedHTML;
@@ -246,7 +246,7 @@ engageApp.controller('engageCtlr',
     $scope.displayXMConfBridge = function() {
       console.log("***xm_conf_bridge_enable " + JSON.stringify($scope.xm_conf_bridge_enable));
       var display = false;
-      if ($scope.xm_conf_bridge_enable[0].length > 0) {
+      if ($scope.xm_conf_bridge_enable.length > 0) {
         if ($scope.xm_conf_bridge_enable[0].value === true) {
 
           display = true;

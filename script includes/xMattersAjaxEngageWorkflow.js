@@ -261,6 +261,8 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
     var opts;
     var conf = new xMattersConfig();
     var log = new xMattersLogger(conf.DEBUGGING, 'xMattersAjaxEngageWorkflow');
+    var engageWorkflowConfig = new xMattersEngageWorkflowConfig();
+
     try {
       var search_term = this.getParameter('search_term');
       log.debug('searchPeople, incoming search term:' + search_term);
@@ -272,15 +274,17 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
       personObj.body = {};
       personObj.body.data = [];
 
-      var grPerson = new GlideRecord("sys_user");
-      grPerson.addEncodedQuery("nameLIKE" + value + "^ORuser_nameLIKE" + value + "^active=true");
+      var roleList = engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST.join(',');
+
+      var grPerson = new GlideRecord("sys_user_has_role");
+      grPerson.addEncodedQuery("user.nameLIKE" + value + "^ORuser.user_nameLIKE" + value + "^user.active=true^role.nameIN" + roleList);
       grPerson.query();
       while (grPerson.next()) {
 
         personObj.body.data.push({
-          "firstName": String(grPerson.first_name),
-          "lastName": String(grPerson.last_name),
-          "targetName": String(grPerson.user_name)
+          "firstName": String(grPerson.user.first_name),
+          "lastName": String(grPerson.user.last_name) + ' ('+ String(grPerson.user.user_name) + ')',
+          "targetName": String(grPerson.user.user_name)
         });
       }
 
@@ -392,6 +396,8 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
     var opts;
     var conf = new xMattersConfig();
     var log = new xMattersLogger(conf.DEBUGGING, 'xMattersAjaxEngageWorkflow');
+    var engageWorkflowConfig = new xMattersEngageWorkflowConfig();
+
     try {
       var search_term = this.getParameter('search_term');
       log.debug('searchGroups, incoming search term:' + search_term);
@@ -403,13 +409,15 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
       groupObj.body = {};
       groupObj.body.data = [];
 
-      var grGroup = new GlideRecord("sys_user_group");
-      grGroup.addEncodedQuery("nameLIKE" + value + "^ORdescriptionLIKE" + value + "^active=true");
+      var roleList = engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST.join(',');
+
+      var grGroup = new GlideRecord("sys_group_has_role");
+      grGroup.addEncodedQuery("group.nameLIKE" + value + "^ORgroup.descriptionLIKE" + value + "^group.active=true^role.nameIN" + roleList);
       grGroup.query();
       while (grGroup.next()) {
 
         groupObj.body.data.push({
-          "targetName": String(grGroup.name)
+          "targetName": String(grGroup.group.name)
         });
       }
 
@@ -688,11 +696,11 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
       var formData = new global.JSON().decode(form_data);
       var config = new xMattersConfig();
       var log = new xMattersLogger(config.DEBUGGING, 'xMatters User Sync BR');
-      log.info("HERE IT IS! " + formData + '  string it   ' + JSON.stringify(formData));
-      var engageRequest = new GlideRecord('x_xma_xmatters_engage_with_xmatters');
+
+      var engageRequest = new GlideRecord('x_xma_xmatters_xmatters_engage_workflow');
       engageRequest.initialize();
       engageRequest.recipients = formData.recipients;
-      //       engageRequest.message = formData.message;
+      engageRequest.message = formData.message;
       engageRequest.parent_incident = formData.incident_id;
       engageRequest.message_subject = formData.subject;
       engageRequest.send_priority = formData.send_priority;
@@ -701,7 +709,11 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
       engageRequest.initiator_username = formData.initiator_username;
 
       // custom update to store the entire detail here
-      engageRequest.message = JSON.stringify(formData);
+      engageRequest.type = formData.type;
+      engageRequest.passcode = formData.passcode;
+      engageRequest.meeting_link = formData.meeting_link;
+      engageRequest.date_time = formData.date_time;
+
       engageRequest.insert();
 
       response = {
@@ -720,48 +732,48 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
   },
 
   getMeetingLinkFromTable: function() {
-      var response;
-      var opts;
-      var conf = new xMattersConfig();
-      var log = new xMattersLogger(conf.DEBUGGING, 'xMattersAjaxEngageWorkflow');
-      try {
-        var userID = decodeURIComponent(this.getParameter('userID'));
+    var response;
+    var opts;
+    var conf = new xMattersConfig();
+    var log = new xMattersLogger(conf.DEBUGGING, 'xMattersAjaxEngageWorkflow');
+    try {
+      var userID = decodeURIComponent(this.getParameter('userID'));
 
-        var obj = {};
-        obj.body = {};
-        obj.body.data = [];
+      var obj = {};
+      obj.body = {};
+      obj.body.data = [];
 
-        var gr = new GlideRecord("x_xma_xmatters_engage_workflow_meeting");
-        gr.addQuery("user.sys_id", userID);
-        gr.query();
-        while (gr.next()) {
-          obj.body.data.push({
-            "conference_bridge_name": String(gr.conference_bridge_name),
-            "meeting_url": String(gr.meeting_url),
-            "passcode": String(gr.passcode)
-          });
-        }
-        log.debug('getMeetingLinkFromTable: has:' + JSON.stringify(obj));
-
-        // mock a get response
-        obj.status = 200;
-        obj.body = new global.JSON().encode(obj.body);
-        obj.respData = obj.body;
-
-        response = {
-          success: true,
-          data: obj
-        };
-      } catch (e) {
-        response = {
-          success: false,
-          opts: opts,
-          error: String(e)
-        };
+      var gr = new GlideRecord("x_xma_xmatters_engage_workflow_meeting");
+      gr.addQuery("user.sys_id", userID);
+      gr.query();
+      while (gr.next()) {
+        obj.body.data.push({
+          "conference_bridge_name": String(gr.conference_bridge_name),
+          "meeting_url": String(gr.meeting_url),
+          "passcode": String(gr.passcode)
+        });
       }
+      log.debug('getMeetingLinkFromTable: has:' + JSON.stringify(obj));
 
-      return new global.JSON().encode(response);
-    },
+      // mock a get response
+      obj.status = 200;
+      obj.body = new global.JSON().encode(obj.body);
+      obj.respData = obj.body;
+
+      response = {
+        success: true,
+        data: obj
+      };
+    } catch (e) {
+      response = {
+        success: false,
+        opts: opts,
+        error: String(e)
+      };
+    }
+
+    return new global.JSON().encode(response);
+  },
 
 
   type: 'xMattersAjaxEngageWorkflow'

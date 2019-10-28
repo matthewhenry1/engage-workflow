@@ -12,8 +12,12 @@ xMattersEngageWorkflowConfig.prototype = {
     // enable engage type
     this.ENGAGE_WORKFLOW_ENABLED = gs.getProperty(prefix + '.engage_workflow_enable') == 'true';
 
+	// engage workflow url
+	this.ENGAGE_WORKFLOW_URL = gs.getProperty(prefix + '.engage_workflow_url');
+
     // query selector: xmatters or servicenow
     this.ENGAGE_WORKFLOW_QUERY = gs.getProperty(prefix + '.engage_workflow_query');
+    this.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST = gs.getProperty(prefix + '.engage_workflow_query_servicenow_role_list').split(';');
 
     // notification type lists
     this.ENGAGE_WORKFLOW_NOTIFICATION_TYPE_LIST = gs.getProperty(prefix + '.engage_workflow_notification_type_list');
