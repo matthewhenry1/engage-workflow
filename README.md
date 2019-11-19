@@ -22,7 +22,7 @@ Download and watch: [media/engage-demo.mov](media/engage-demo.mov)
 ![media/assistance-request.png](media/assistance-request.png)
 
 ## Install
-1. From within ServiceNow import the update set: [Update Set](xMatters Engage Workflow v1.4.xml)
+1. From within ServiceNow import the update set: [Update Set](xMattersEngageWorkflowVersion1.4.xml)
 2. Import the xMatters communication plan into xMatters: [Communication Plan](xMattersEngage.zip)
 3. Configure the integration from within ServiceNow
 4. Configure the integration from within xMatters by updating **Edit Endpoints**
