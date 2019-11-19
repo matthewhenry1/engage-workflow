@@ -8,6 +8,7 @@ engageApp.config(function(tagsInputConfigProvider) {
     displayProperty: 'name',
     keyProperty: 'targetName'
   }).setDefaults('autoComplete', {
+    debounceDelay: 250,
     displayProperty: 'name',
     minLength: 2
   });
@@ -20,7 +21,6 @@ engageApp.config(function($translateProvider) {
       LABEL: {
         RECIPIENTS: 'Recipients',
         CONFERENCE_BRIDGE: 'Conference Bridge',
-        SUBJECT: 'Subject',
         MESSAGE: 'Message',
         TYPE: 'Type',
         DATE: 'Date',
@@ -41,6 +41,9 @@ engageApp.config(function($translateProvider) {
         SUCCESS: 'Your request has been submitted successfully. To track the progress of this request in ServiceNow, view the Engage with xMatters record.'
       },
       OPTIONS: {
+        TYPE: {
+          'None': '-- None --'
+        },
         CONFERENCE_BRIDGE: {
           'None': '-- None --',
           'External_Category': 'External Bridges',
@@ -55,10 +58,15 @@ engageApp.config(function($translateProvider) {
     }
   });
   $translateProvider.preferredLanguage('en');
+
 });
 
 engageApp.controller('engageCtlr',
   function($scope, $window, $translate, XMService, LocationService, OptionsProvider, GlideAjax, $sce) {
+
+    // configs
+    $scope.config = OptionsProvider.engage_workflow_config;
+
     // Core scope variables
     $scope.is_finished = false;
     $scope.is_invalid = false;
@@ -70,6 +78,20 @@ engageApp.controller('engageCtlr',
     $scope.recipients = [];
     $scope.conference_bridge = 'None';
 
+    // notification types
+    $scope.notification_types = function() {
+      if ($scope.config.notification_types) {
+        return $scope.config.notification_types.split(';');
+      }
+    };
+
+    // List dropdown for the external conf bridges
+    $scope.external_conference_bridge_options = function() {
+      if ($scope.config.external_conference_bridge_options) {
+        return $scope.config.external_conference_bridge_options.split(';');
+      }
+    };
+
     // 	More information on why the following primitives required a .value https://github.com/angular/angular.js/wiki/Understanding-Scopes
     $scope.meeting_link = {
       "value": ""
@@ -78,8 +100,6 @@ engageApp.controller('engageCtlr',
     $scope.passcode = {
       "value": ""
     };
-
-    $scope.legal_statement = '';
 
     // Date Required Data Start
     $scope.date_time = {
@@ -100,39 +120,11 @@ engageApp.controller('engageCtlr',
     };
     // Date Required Data End
 
-
-    // result scope variable
-    $scope.engage_url = '';
-
     // behind the scenes scope variables used for options/state
     $scope.xm_search_state = XMService.searchState;
+
     $scope.hosted_conference_bridge_options = OptionsProvider.hosted_conference_bridges;
-
-    // engage query
-    $scope.engage_workflow_query = OptionsProvider.engage_workflow_query;
-
-    // notify types
-    $scope.notification_types = OptionsProvider.notification_types;
-    $scope.notification_types_to_display_date_time = OptionsProvider.notification_types_to_display_date_time;
-
-    // external conf
-    $scope.external_conference_bridge_options = OptionsProvider.external_conference_bridges;
-
-    // meeting builder
-    $scope.meeting_builder_enable = OptionsProvider.meeting_builder_enable;
-
-    $scope.meeting_builder_type = OptionsProvider.meeting_builder_type;
-
-    // if dynamic meeting builder
-    $scope.dynamic_meeting_builder_ext_conf_bridge = OptionsProvider.dynamic_meeting_builder_ext_conf_bridge;
-    $scope.dynamic_meeting_builder_url = OptionsProvider.dynamic_meeting_builder_url;
-    $scope.dynamic_meeting_builder_profile = OptionsProvider.dynamic_meeting_builder_profile;
-
     $scope.meeting_table = XMService.getMeetingLinkFromTable(g_user.userID);
-
-    // misc.
-    $scope.xm_conf_bridge_enable = OptionsProvider.xm_conf_bridge_enable;
-    $scope.legal_statement = OptionsProvider.legal_statement;
 
     $scope.recipientTypes = [{
         "label": "ENGAGE_XM.OPTIONS.RECIPIENT_TYPE.people",
@@ -147,51 +139,48 @@ engageApp.controller('engageCtlr',
     // default...
     $scope.activeRecipientType = $scope.recipientTypes[0];
 
-    // Set the incident id scope variable based on search parameters in the url
-    $scope.incident_id = LocationService.searchParams.incident_id;
-    if (typeof $scope.incident_id === 'undefined' || $scope.incident_id === null || $scope.incident_id === '') {
-      jslog('No incident identifier was defined');
-      $scope.global_errors.push('Missing "incident_id" parameter: A valid ServiceNow Incident system id must be set to continue');
+    // Set the sys id scope variable based on search parameters in the url
+    $scope.parent_sys_id = LocationService.searchParams.sys_id;
+    $scope.parent_table_name = LocationService.searchParams.table_name;
+
+    if (typeof $scope.parent_sys_id === 'undefined' || $scope.parent_sys_id === null || $scope.parent_sys_id === '') {
+      jslog('No sys_id identifier was defined');
+      $scope.global_errors.push('Missing "sysparm_sysID" parameter: A valid ServiceNow Incident system id must be set to continue');
     }
 
     $scope.isExternalConferenceBridge = function(conference) {
 
       var isExternal = false;
-      for (var i = 0; i < $scope.external_conference_bridge_options.length; i++) {
-        if (conference.toLowerCase() === $scope.external_conference_bridge_options[i].label.toLowerCase()) {
-          isExternal = true;
+      if ($scope.config.external_conference_bridge_options) {
+        var external_conference_bridges = $scope.config.external_conference_bridge_options.split(';');
+        for (var i = 0; i < external_conference_bridges.length; i++) {
+          if (conference.toLowerCase() === external_conference_bridges[i].toLowerCase()) {
+            isExternal = true;
+          }
         }
       }
+
       return isExternal;
     };
 
     $scope.displayLegalStatement = function() {
       var trustedHTML = '';
-      if ($scope.legal_statement.length > 0) {
-        trustedHTML = $sce.trustAsHtml($scope.legal_statement[0].value);
+      if ($scope.config.legal_statement) {
+        trustedHTML = $sce.trustAsHtml($scope.config.legal_statement);
       }
       return trustedHTML;
     };
 
     $scope.updateMeetingFields = function(conference) {
-
       var clearFields = true;
-      var matchForDynamic = (conference.toLowerCase() === $scope.dynamic_meeting_builder_ext_conf_bridge[0].value.toLowerCase());
+      var matchForDynamic = (conference.toLowerCase() === $scope.config.dynamic_meeting_builder_ext_conf_bridge.toLowerCase());
 
-      // -- PASSCODE START --
-      if ($scope.meeting_builder_enable[0].value == "true") {
-
-        var meeting_builder_type = $scope.meeting_builder_type[0].value;
+      if ($scope.config.meeting_builder_enable == "true") {
+        var meeting_builder_type = $scope.config.meeting_builder_type;
         // leverage the meeting link table
         if (meeting_builder_type == 'table') {
-
-          console.log('Received meeting table data: ' + JSON.stringify($scope.meeting_table));
           if ($scope.meeting_table.$$state.value) {
-            console.log('has $scope.meeting_table.value');
             for (var i = 0; i < $scope.meeting_table.$$state.value.length; i++) {
-              console.log('User has selected conference: ' + conference);
-              console.log('Comparing against table value of ' + $scope.meeting_table.$$state.value[i].conference_bridge_name);
-
               if ($scope.meeting_table.$$state.value[i].conference_bridge_name.toLowerCase() === conference.toLowerCase()) {
                 $scope.passcode.value = $scope.meeting_table.$$state.value[i].passcode;
                 $scope.meeting_link.value = $scope.meeting_table.$$state.value[i].meeting_url;
@@ -202,8 +191,8 @@ engageApp.controller('engageCtlr',
           }
         } else if (meeting_builder_type == 'dynamic' && matchForDynamic) {
 
-          var dynamic_meeting_builder_url = $scope.dynamic_meeting_builder_url[0].value;
-          var dynamic_meeting_builder_profile = $scope.dynamic_meeting_builder_profile[0].value;
+          var dynamic_meeting_builder_url = $scope.config.dynamic_meeting_builder_url;
+          var dynamic_meeting_builder_profile = $scope.config.dynamic_meeting_builder_profile;
 
           if (dynamic_meeting_builder_profile == 'first_name.last_name') {
             $scope.meeting_link.value = dynamic_meeting_builder_url + g_user.firstName + '.' + g_user.lastName;
@@ -225,16 +214,16 @@ engageApp.controller('engageCtlr',
           $scope.meeting_link.value = '';
         }
 
-      } // CLOSING BRACE ON THE ENABLE
+      }
     };
 
     $scope.displayDateTime = function(type) {
-      console.log("***displayDateTime " + JSON.stringify($scope.notification_types_to_display_date_time));
       var display = false;
 
       if (type !== '' && typeof type !== 'undefined') {
-        for (var i = 0; i < $scope.notification_types_to_display_date_time.length; i++) {
-          if (type.toLowerCase() === $scope.notification_types_to_display_date_time[i].label.toLowerCase()) {
+        var types_date_time = $scope.config.notification_types_to_display_date_time.split(';');
+        for (var i = 0; i < types_date_time.length; i++) {
+          if (type.toLowerCase() === types_date_time[i].toLowerCase()) {
             display = true;
           }
         }
@@ -244,10 +233,9 @@ engageApp.controller('engageCtlr',
     };
 
     $scope.displayXMConfBridge = function() {
-      console.log("***xm_conf_bridge_enable " + JSON.stringify($scope.xm_conf_bridge_enable));
       var display = false;
-      if ($scope.xm_conf_bridge_enable.length > 0) {
-        if ($scope.xm_conf_bridge_enable[0].value === true) {
+      if ($scope.config.xm_conf_bridge_enable) {
+        if ($scope.config.xm_conf_bridge_enable === 'true') {
 
           display = true;
         }
@@ -278,8 +266,8 @@ engageApp.controller('engageCtlr',
     $scope.submit = function() {
       $scope.engageXMForm.$setSubmitted(true);
       if ($scope.engageXMForm.$invalid) {
-        console.log('The form will not be submitted in an invalid state, error on Type field true/false: ' + JSON.stringify($scope.engageXMForm.type.$error));
-        console.log('The form will not be submitted in an invalid state error on Recipients field true/false: ' + JSON.stringify($scope.engageXMForm.recipients.$error));
+        jslog('The form will not be submitted in an invalid state, error on Type field true/false: ' + JSON.stringify($scope.engageXMForm.type.$error));
+        jslog('The form will not be submitted in an invalid state error on Recipients field true/false: ' + JSON.stringify($scope.engageXMForm.recipients.$error));
       } else {
         var recipientTargets = [];
         for (var i = 0; i < $scope.recipients.length; i++) {
@@ -291,7 +279,8 @@ engageApp.controller('engageCtlr',
           "subject": $scope.subject,
           "message": $scope.message,
           "conference_bridge": $scope.conference_bridge,
-          "incident_id": $scope.incident_id,
+          "parent_sys_id": $scope.parent_sys_id,
+          "parent_table_name": $scope.parent_table_name,
           "initiator_display_name": g_user.getFullName(),
           "initiator_username": g_user.userName,
           "type": $scope.type,
@@ -299,7 +288,7 @@ engageApp.controller('engageCtlr',
           "meeting_link": $scope.meeting_link.value,
           "passcode": $scope.passcode.value
         };
-
+		console.log("SUBMITTING -- " + JSON.stringify(formData) );
         var ga = new GlideAjax('xMattersAjaxEngageWorkflow');
         ga.addParam('sysparm_name', 'submitEngageWithXMatters');
         ga.addParam('form_data', JSON.stringify(formData));
@@ -308,9 +297,6 @@ engageApp.controller('engageCtlr',
             $translate('ENGAGE_XM.MESSAGE.SUCCESS').then(function(successMsg) {
               closeDialog(successMsg);
             });
-            // replacing our complete page by closing the dialog for you
-            //$scope.is_finished = true;
-            //$scope.engage_url = '/nav_to.do?uri=x_xma_xmatters_engage_with_xmatters.do?sys_id=' + resp.data.sys_id;
           } else {
             jslog(resp);
           }

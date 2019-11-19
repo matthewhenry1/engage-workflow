@@ -255,7 +255,6 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
     }
     return new global.JSON().encode(response);
   },
-
   searchPeopleFromServiceNow: function() {
     var response;
     var opts;
@@ -276,14 +275,17 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
 
       var roleList = engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST.join(',');
 
-      var grPerson = new GlideRecord("sys_user_has_role");
+      var arrayUtil = new global.ArrayUtil();
+      var uniqueList = [];
+
+      var grPerson = new GlideAggregate("sys_user_has_role");
       grPerson.addEncodedQuery("user.nameLIKE" + value + "^ORuser.user_nameLIKE" + value + "^user.active=true^role.nameIN" + roleList);
+      grPerson.groupBy('user');
       grPerson.query();
       while (grPerson.next()) {
-
         personObj.body.data.push({
           "firstName": String(grPerson.user.first_name),
-          "lastName": String(grPerson.user.last_name) + ' ('+ String(grPerson.user.user_name) + ')',
+          "lastName": String(grPerson.user.last_name) + ' (' + String(grPerson.user.user_name) + ')',
           "targetName": String(grPerson.user.user_name)
         });
       }
@@ -411,8 +413,12 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
 
       var roleList = engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST.join(',');
 
-      var grGroup = new GlideRecord("sys_group_has_role");
+      var arrayUtil = new global.ArrayUtil();
+      var uniqueList = [];
+
+      var grGroup = new GlideAggregate("sys_group_has_role");
       grGroup.addEncodedQuery("group.nameLIKE" + value + "^ORgroup.descriptionLIKE" + value + "^group.active=true^role.nameIN" + roleList);
+      grGroup.groupBy('group');
       grGroup.query();
       while (grGroup.next()) {
 
@@ -443,293 +449,8 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
     return new global.JSON().encode(response);
   },
 
-  getEngageWorkflowQuery: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_QUERY
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
 
 
-  getNotificationTypes: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_NOTIFICATION_TYPE_LIST
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getNotificationTypesToDisplayDateTime: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_NOTIFICATION_TYPE_DATE_TIME_LIST
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  /**
-   * Retrieves the configured External Conference Bridges
-   *
-   * @return {String} A stringified JSON object with the following details:
-   * {
-   * 		"success": true or false depending on whether the request was successful,
-   * 		"log": an array of strings used to debug the request,
-   * 		"error": only present if "success" = false - a string describing what went wrong,
-   * 		"data": only present if "success" = true - an object that will contain the external conference bridges as text
-   * }
-   */
-  getExternalConferenceBridges: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_EXTERNAL_CONF_BRIDGE_LIST
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-
-  getMeetingBuilderEnable: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_MEETING_BUILDER_ENABLE
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getMeetingBuilderType: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_MEETING_BUILDER_TYPE
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getDynamicMeetingBuilderExternalConfBridge: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_EXTERNAL_CONF_BRIDGE
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-
-  getDynamicMeetingBuilderURL: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_URL
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getMeetingBuilderDynamicProfile: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_PROFILE
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getXMConfBridgeEnable: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_XM_CONF_BRIDGE_ENABLE
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  getLegalStatement: function() {
-    var response;
-    var customLog = [];
-    try {
-      var conf = new xMattersEngageWorkflowConfig();
-      response = {
-        success: true,
-        data: conf.ENGAGE_WORKFLOW_LEGAL_STATEMENT
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    response.log = customLog;
-    return new global.JSON().encode(response);
-  },
-
-  /**
-   * Submits a new Engage with xMatters record in ServiceNow (note that this does not perform any communication between ServiceNow and xMatters)
-   * When called from glide ajax, must have a stringified "form_data" parameter. This parameter should look like the following:
-   * 	{
-   * 		"recipients": semi-colon delimited list of recipient target names,
-   * 		"message": the message,
-   * 		"incident_id": System ID of Parent Incident,
-   * 		"subject": the subject,
-   * 		"send_priority": the send priority,
-   * 		"conference_bridge": Optional Conference Bridge
-   * 	}
-   *
-   * @return {String} A stringified JSON object with the following details:
-   * {
-   * 		"success": true or false depending on whether the submission was successful,
-   * 		"error": only present if "success" = false - a string describing what went wrong,
-   * 		"data": only present if "success" = true - an object with the following properties:
-   * 			{
-   * 				"sys_id": the id of the new Engage with xMatters record
-   * 			}
-   * }
-   */
-  submitEngageWithXMatters: function() {
-    var response;
-    try {
-      var form_data = this.getParameter('form_data');
-      var formData = new global.JSON().decode(form_data);
-      var config = new xMattersConfig();
-      var log = new xMattersLogger(config.DEBUGGING, 'xMatters User Sync BR');
-
-      var engageRequest = new GlideRecord('x_xma_xmatters_xmatters_engage_workflow');
-      engageRequest.initialize();
-      engageRequest.recipients = formData.recipients;
-      engageRequest.message = formData.message;
-      engageRequest.parent_incident = formData.incident_id;
-      engageRequest.message_subject = formData.subject;
-      engageRequest.send_priority = formData.send_priority;
-      engageRequest.conference_bridge = formData.conference_bridge;
-      engageRequest.initiator_display_name = formData.initiator_display_name;
-      engageRequest.initiator_username = formData.initiator_username;
-
-      // custom update to store the entire detail here
-      engageRequest.type = formData.type;
-      engageRequest.passcode = formData.passcode;
-      engageRequest.meeting_link = formData.meeting_link;
-      engageRequest.date_time = formData.date_time;
-
-      engageRequest.insert();
-
-      response = {
-        success: true,
-        data: {
-          sys_id: String(engageRequest.sys_id)
-        }
-      };
-    } catch (e) {
-      response = {
-        success: false,
-        error: String(e)
-      };
-    }
-    return new global.JSON().encode(response);
-  },
 
   getMeetingLinkFromTable: function() {
     var response;
@@ -775,6 +496,109 @@ xMattersAjaxEngageWorkflow.prototype = Object.extendsObject(global.AbstractAjaxP
     return new global.JSON().encode(response);
   },
 
+  getEngageWorkflowConfig: function() {
+    var conf = new xMattersConfig();
+    var log = new xMattersLogger(conf.DEBUGGING, 'xMattersAjaxEngageWorkflow');
+    var engageWorkflowConfig = new xMattersEngageWorkflowConfig();
+    var response;
+    try {
+
+      response = {
+        success: true,
+        data: {
+          enabled: engageWorkflowConfig.ENGAGE_WORKFLOW_ENABLED,
+          url: engageWorkflowConfig.ENGAGE_WORKFLOW_URL,
+          query: engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY,
+          query_role_list: engageWorkflowConfig.ENGAGE_WORKFLOW_QUERY_SERVICENOW_ROLE_LIST,
+          notification_types: engageWorkflowConfig.ENGAGE_WORKFLOW_NOTIFICATION_TYPE_LIST,
+          notification_types_to_display_date_time: engageWorkflowConfig.ENGAGE_WORKFLOW_NOTIFICATION_TYPE_DATE_TIME_LIST,
+          external_conference_bridge_options: engageWorkflowConfig.ENGAGE_WORKFLOW_EXTERNAL_CONF_BRIDGE_LIST,
+          meeting_builder_enable: engageWorkflowConfig.ENGAGE_WORKFLOW_MEETING_BUILDER_ENABLE,
+          meeting_builder_type: engageWorkflowConfig.ENGAGE_WORKFLOW_MEETING_BUILDER_TYPE,
+          dynamic_meeting_builder_ext_conf_bridge: engageWorkflowConfig.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_EXTERNAL_CONF_BRIDGE,
+          dynamic_meeting_builder_url: engageWorkflowConfig.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_URL,
+          dynamic_meeting_builder_profile: engageWorkflowConfig.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_PROFILE,
+          xm_conf_bridge_enable: engageWorkflowConfig.ENGAGE_WORKFLOW_XM_CONF_BRIDGE_ENABLE,
+          legal_statement: engageWorkflowConfig.ENGAGE_WORKFLOW_LEGAL_STATEMENT
+        }
+      };
+    } catch (e) {
+      response = {
+        success: false,
+        error: String(e)
+      };
+    }
+
+    log.debug('Retrieving configurations for Engage Workflow ' + JSON.stringify(response.data));
+
+    return new global.JSON().encode(response);
+  },
+  /**
+   * Submits a new Engage with xMatters record in ServiceNow (note that this does not perform any communication between ServiceNow and xMatters)
+   * When called from glide ajax, must have a stringified "form_data" parameter. This parameter should look like the following:
+   * 	{
+   * 		"recipients": semi-colon delimited list of recipient target names,
+   * 		"message": the message,
+   * 		"incident_id": System ID of Parent Incident,
+   * 		"subject": the subject,
+   * 		"send_priority": the send priority,
+   * 		"conference_bridge": Optional Conference Bridge
+   * 	}
+   *
+   * @return {String} A stringified JSON object with the following details:
+   * {
+   * 		"success": true or false depending on whether the submission was successful,
+   * 		"error": only present if "success" = false - a string describing what went wrong,
+   * 		"data": only present if "success" = true - an object with the following properties:
+   * 			{
+   * 				"sys_id": the id of the new Engage with xMatters record
+   * 			}
+   * }
+   */
+  submitEngageWithXMatters: function() {
+    var response;
+    try {
+      var form_data = this.getParameter('form_data');
+      var formData = new global.JSON().decode(form_data);
+      var config = new xMattersConfig();
+      var log = new xMattersLogger(config.DEBUGGING, 'xMatters User Sync BR');
+
+      var engageRequest = new GlideRecord('x_xma_xmatters_xmatters_engage_workflow');
+      engageRequest.initialize();
+      engageRequest.recipients = formData.recipients;
+      engageRequest.message = formData.message;
+	  engageRequest.message_subject = formData.subject;
+      engageRequest.send_priority = formData.send_priority;
+      engageRequest.conference_bridge = formData.conference_bridge;
+      engageRequest.initiator_display_name = formData.initiator_display_name;
+      engageRequest.initiator_username = formData.initiator_username;
+
+	  // fields for parent fields
+	  engageRequest.parent_sys_id = formData.parent_sys_id;
+	  engageRequest.parent_table_name = formData.parent_table_name;
+
+      // custom update to store the entire detail here
+      engageRequest.type = formData.type;
+      engageRequest.passcode = formData.passcode;
+      engageRequest.meeting_link = formData.meeting_link;
+      engageRequest.date_time = formData.date_time;
+
+      engageRequest.insert();
+
+      response = {
+        success: true,
+        data: {
+          sys_id: String(engageRequest.sys_id)
+        }
+      };
+    } catch (e) {
+      response = {
+        success: false,
+        error: String(e)
+      };
+    }
+    return new global.JSON().encode(response);
+  },
 
   type: 'xMattersAjaxEngageWorkflow'
 });

@@ -20,7 +20,7 @@
 @media (min-width: 992px) {
 	.xm-dialog-form {
 		width: 700px;
-		height: 500px;
+		height: 550px;
 	}
 }
 
@@ -28,7 +28,7 @@
 @media (min-width: 1200px) {
 	.xm-dialog-form {
 		width: 750px;
-		height: 500px;
+		height: 550px;
 	}
 }
 .xm-embed-iframe {
@@ -37,7 +37,7 @@
 </style>
 	<div class="xm-dialog-form">
 		<div class="embed-responsive xm-embed-iframe">
-			<iframe name="dialog_frame" id="dialog_frame" src="/x_xma_xmatters_xm_engage_workflow_content.do?sysparm_nostack=true&amp;incident_id=${HTML:sysparm_sysID}" class="embed-responsive-item"></iframe>
+			<iframe name="dialog_frame" id="dialog_frame" src="/x_xma_xmatters_xm_engage_workflow_content.do?sysparm_nostack=true&amp;sys_id=${HTML:sysparm_sysID}&amp;table_name=${HTML:sysparm_table}" class="embed-responsive-item"></iframe>
 		</div>
 	</div>
     <script>

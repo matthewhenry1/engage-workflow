@@ -35,9 +35,14 @@ xMattersEngageWorkflowConfig.prototype = {
     this.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_URL = gs.getProperty(prefix + '.engage_workflow_meeting_builder_dynamic_url');
     this.ENGAGE_WORKFLOW_MEETING_BUILDER_DYNAMIC_PROFILE = gs.getProperty(prefix + '.engage_workflow_meeting_builder_dynamic_profile');
 
-    //
+    // misc.
     this.ENGAGE_WORKFLOW_XM_CONF_BRIDGE_ENABLE = gs.getProperty(prefix + '.engage_workflow_xm_conference_bridge_enable') == 'true';
     this.ENGAGE_WORKFLOW_LEGAL_STATEMENT = gs.getProperty(prefix + '.engage_workflow_legal_statement');
+
+	// moment format and tz
+	this.ENGAGE_WORKFLOW_MOMENT_TZ = gs.getProperty(prefix + '.engage_workflow_moment_tz');
+	this.ENGAGE_WORKFLOW_MOMENT_FORMAT = gs.getProperty(prefix + '.engage_workflow_moment_format');
+
   },
 
   type: 'xMattersEngageWorkflowConfig'

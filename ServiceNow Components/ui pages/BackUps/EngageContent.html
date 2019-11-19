@@ -235,65 +235,63 @@
           </div>
 
           <div class="row">
-            <div ng-class="engageXMForm.notification_type.$error.required ? 'is-required' : 'is-filled'">
-              <div ng-class="displayDateTime(notification_type) ? 'form-group col-sm-4' : 'form-group col-sm-12'">
+            <div ng-class="engageXMForm.type.$error.required ? 'is-required' : 'is-filled'">
+              <div ng-class="displayDateTime(type) ? 'form-group col-sm-4' : 'form-group col-sm-12'">
                 <span class="required-marker"></span>
-                <label class="xm-label" for="notification_type">Type</label>
-                <select class="form-control" id="notification-type" ng-model="notification_type" name="notification_type" required="required">
-                  <option value="">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
-                  <option ng-repeat="type in notification_types" value="{{type.value}}">{{ type.label | translate }}</option>
+                <label class="xm-label">{{ 'ENGAGE_XM.LABEL.TYPE' | translate }}</label>
+                <select class="form-control" id="type" ng-model="type" name="type" required="required">
+                  <option value="">{{ 'ENGAGE_XM.OPTIONS.TYPE.None' | translate }}</option>
+                  <option ng-repeat="type in notification_types()" value="{{type}}">{{ type | translate }}</option>
                 </select>
-                <div class="xm-error" ng-messages="engageXMForm.notification_type.$error" ng-show="engageXMForm.$submitted">
+                <div class="xm-error" ng-messages="engageXMForm.type.$error" ng-show="engageXMForm.$submitted">
                   <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
                 </div>
               </div>
             </div>
 
-            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(notification_type)">
-              <label class="xm-label">Date</label>
+            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(type)">
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.TIME' | translate }}</label>
 
-              <p class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup="dd-MMMM-yyyy" ng-model="meeting_datetime" is-open="calendarPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <div class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="dd-MMMM-yyyy" ng-model="date_time.value" is-open="calendarPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
                 <span class="input-group-btn">
                   <button type="button" class="btn btn-default" ng-click="openCalendarPopup()"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
-              </p>
+              </div>
             </div>
-            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(notification_type)">
-              <label class="xm-label">Time</label>
-              <uib-timepicker ng-model="meeting_datetime" ng-change="changed()" show-spinners="false"></uib-timepicker>
+            <div class="form-group col-sm-4" id="date_time_div" ng-if="displayDateTime(type)">
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.DATE' | translate }}</label>
+              <uib-timepicker ng-model="date_time.value" ng-change="changed()" show-spinners="false"></uib-timepicker>
             </div>
           </div>
 
           <div class="row">
             <div class="form-group col-sm-12">
               <label class="xm-label">{{ 'ENGAGE_XM.LABEL.CONFERENCE_BRIDGE' | translate }}</label>
-              <!-- Insert below if desired to create multi-select multiple="multiple" -->
-              <select class="form-control" ng-model="conference_bridge" id="engage_conf_select">
+              <select class="form-control" ng-model="conference_bridge" id="engage_conf_select" ng-change="updateMeetingFields(conference_bridge)">
                 <option value="None" class="conf-engage-none">{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.None' | translate }}</option>
                 <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.Hosted_Category' | translate }}" ng-if="displayXMConfBridge()">
                   <option ng-repeat="bridgeOpt in hosted_conference_bridge_options" value="{{bridgeOpt.value}}" class="conf-engage-xm-hosted">{{ bridgeOpt.label | translate }}</option>
                 </optgroup>
-                <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.External_Category' | translate }}" ng-if="external_conference_bridge_options.length > 0">
-                  <option ng-repeat="bridgeOpt in external_conference_bridge_options" value="{{bridgeOpt.value}}" id="conf_engage_external" class="conf_engage_external">{{ bridgeOpt.label | translate }}</option>
+                <optgroup label="{{ 'ENGAGE_XM.OPTIONS.CONFERENCE_BRIDGE.External_Category' | translate }}" ng-if="external_conference_bridge_options().length > 0">
+                  <option ng-repeat="bridgeOpt in external_conference_bridge_options()" value="{{bridgeOpt}}" id="conf_engage_external" class="conf_engage_external">{{ bridgeOpt | translate }}</option>
                 </optgroup>
               </select>
             </div>
           </div>
-          <div class="row">
-            <div class="form-group col-sm-3" id='passcode_div' ng-if="isExternalConferenceBridge(conference_bridge)">
+          <div class="row" ng-if="isExternalConferenceBridge(conference_bridge)">
+            <div class="form-group col-sm-3" id='passcode_div'>
               <span class="required-marker"></span>
-              <label class="xm-label">Passcode</label>
-              <input type="text" class="form-control" ng-model="passcode" ng-value="displayPasscode(conference_bridge)" id="passcode" name="passcode" ng-maxlength="25" />
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.PASSCODE' | translate }}</label>
+              <input type="text" class="form-control" ng-model="passcode.value" id="passcode" name="passcode" ng-maxlength="25" />
               <div class="xm-error" ng-messages="engageXMForm.passcode.$error" ng-show="engageXMForm.$submitted">
                 <div ng-message="required">{{ 'ENGAGE_XM.ERROR.REQUIRED' | translate }}</div>
                 <div ng-message="maxlength">{{ 'ENGAGE_XM.ERROR.MAX_LENGTH' | translate:'{ max_length: 25 }' }}</div>
               </div>
             </div>
-
-            <div class="form-group col-sm-9" ng-if="isExternalConferenceBridge(conference_bridge)">
-              <label class="xm-label">Meeting Link</label>
-              <input type="text" class="form-control" ng-model="meetinglink" ng-value="displayMeetingLink(conference_bridge)" id="meetinglink" name="meetinglink" ng-maxlength="2000" />
+            <div class="form-group col-sm-9">
+              <label class="xm-label">{{ 'ENGAGE_XM.LABEL.MEETING_LINK' | translate }}</label>
+              <input type="text" class="form-control" ng-model="meeting_link.value" id="meeting_link" name="meeting_link" ng-maxlength="2000" />
             </div>
           </div>
 
