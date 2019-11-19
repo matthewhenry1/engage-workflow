@@ -21,7 +21,12 @@ Download and watch: [media/engage-demo.mov](media/engage-demo.mov)
 
 [media/assistance-request.png](media/assistance-request.png)
 
-## Configurations Overview
+## Install
+From within ServiceNow import the update set: [ServiceNow Update Set/xMatters Engage Workflow v1.4.xml](ServiceNow Update Set/xMatters Engage Workflow v1.4.xml)
+
+### Configurations
+To configure the new component navigate to **Engage Workflow - xMatters** > **Engage Workflow Configuration**.
+
 ![media/configurations-1.png](media/configurations-1.png)
 ![media/configurations-2.png](media/configurations-2.png)
 
