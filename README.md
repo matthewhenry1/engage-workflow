@@ -8,18 +8,18 @@
 * Ability to auto-populate the External Conference Bridge Passcode and Meeting Room link by user profile
 * Out of box support for Incident table, but can be configured for any other tables.
 
-## Preview
-### With Date and Time and External Conference Bridge Selected:
+## Overview
+### Conference Bridge Alert
+
+Download and watch: [media/conf-bridge-demo.mov](media/conf-bridge-demo.mov)
 
 ![media/date-time-and-meeting.png](media/date-time-and-meeting.png)
 
-### Assistance Request no meeting date time and conference bridge:
+### Engage with xMatters Event
 
-![media/assistance-request.png](media/assistance-request.png)
+Download and watch: [media/engage-demo.mov](media/engage-demo.mov)
 
-### Empty form:
-
-![media/empty.png](media/empty.png)
+[media/assistance-request.png](media/assistance-request.png)
 
 ## Configurations Overview
 ![media/configurations-1.png](media/configurations-1.png)
@@ -34,16 +34,18 @@ Search for Engage Workflow meetings in the navigation to configure. For non-admi
 Out of box this feature supports the Incident module. There are two steps to configure this for additional tables.
 
 #### Step 1: Configure the UI Action
-This configuration step documents the process to make this Engage button available on the new table. Find **Engage Workflow - xMatters** > **UI Actions** > **xMatters Engage**. Once open, update the field **Table** to the newly desired table and then on the ribbon at the top, right-click and select **Insert and Stay**. By selecting **Insert and Stay**, this will create a new UI Action without impacting the existing on the Incident table.
+This configuration step documents the process to make this Engage button available on the new table. Find **Engage Workflow - xMatters** > **UI Actions** > **Engage Workflow List**. Once open select the existing Engage Workflow record, update the **Table** field to the newly desired table and then on the ribbon at the top, right-click and select **Insert and Stay**. By selecting **Insert and Stay**, this will create a new UI Action without impacting the existing on the Incident table.
 
-Recommended to name as the following for the navigation link to work: **xMatters Engage**
+It is recommended to name the UI Action as the following for the navigation link to continue working: **xMatters Engage**
 
 Once the above has been completed, navigate to the table selected (or search <table_name>.LIST in the navigation it will open a new tab) and confirm the existence of the button.
 
 #### Step 2: Configure the Relationship for Related Lists
-To configure a Related List to make it viewable
+To configure a Related List to make it viewable, search for **Engage Workflow - xMatters** > **Relationships** > **Engage Workflow List**. Once open select the existing Engage Workflow record, update the **Table** field to the newly desired table and then on the ribbon at the top, right-click and select **Insert and Stay**.
 
-Recommended to name as the following for the navigation link to work: **xMatters Engage Workflow**
+It is recommended to name the Relationship for the navigation link to work: **xMatters Engage Workflow**
+
+To add the Related List to the new table refer to the instructions [here](https://support.xmatters.com/hc/en-us/articles/115004327803-ServiceNow-integration-version-5-1-#add_related_list).
 
 Be sure when adding the Related List to the new table to select as below (i.e. do not add the one with Parent in the name)
 ![media/related-list-config.png](media/related-list-config.png)
