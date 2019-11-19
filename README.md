@@ -22,13 +22,31 @@ Download and watch: [media/engage-demo.mov](media/engage-demo.mov)
 ![media/assistance-request.png](media/assistance-request.png)
 
 ## Install
-From within ServiceNow import the update set: [ServiceNow Update Set/xMatters Engage Workflow v1.4.xml](ServiceNow Update Set/xMatters Engage Workflow v1.4.xml)
+1.) From within ServiceNow import the update set: [Update Set](ServiceNow Update Set/xMatters Engage Workflow v1.4.xml)
+2.) Import the xMatters communication plan into xMatters: [Communication Plan](xMatters Communication Plan/xMattersEngage.zip)
+3.) Configure the integration from within ServiceNow
+4.) Configure the integration from within xMatters by updating **Edit Endpoints**
 
 ### Configurations
 To configure the new component navigate to **Engage Workflow - xMatters** > **Engage Workflow Configuration**.
 
-![media/configurations-1.png](media/configurations-1.png)
-![media/configurations-2.png](media/configurations-2.png)
+Below are the list of configurations available from within the **Engage Workflow Configuration**:
+* Toggle to enable Engage Workflow with xMatters: Yes/No
+* Engage Workflow URL Endpoint: URL Endpoint for initial handling of submission
+* Select to determine which location the Recipients selector queries for Users and Groups. A selection of ServiceNow is recommended for organizations with a Mid Server configuration: ServiceNow/xMatters
+* If ServiceNow is selected. Semi-comma delimited role list that will be used for the search
+* List of Types that will display in the Engage Workflow with xMatters (semi-colon delimited)
+* List of Types that will prompt the display of the Date & Time selection (semi-colon delimited)
+* External Conference Bridges that will display (semi-colon delimited)
+* Toggle to enable auto Meeting Builder: Provides the ability to enable the dynamic meeting population.
+* Define how the meeting will be auto-populated on the Engage form: table/dynamic
+* If Dynamic is selected, the External Conference Bridge URL that will trigger the dynamic setting: Enter one of the External Conference Bridges that will trigger the process.
+* If Dynamic is selected, this is the base URL that will display: base URL i.e. `https://meeting-site.xyz.com/join/`
+* If Dynamic is selected, this is how the meeting will be auto populated (i.e. https://meeting-site.xyz.com/join/): user_name/first_name.last_name/none
+* Toggle to enable xMatters Hosted Conference Bridges in the Engage display.
+* Legal Statement: Optional legal statement field which accepts HTML formatted links
+* Moment Format for the Date Time field. Please refer to the documentation here: https://momentjs.com/ What is entered here will be what's included in: moment().tz('America/New_York').format('HERE')
+* Moment TimeZone Conversion for the Date Time field. Please refer to the documentation here: https://momentjs.com/timezone/. What's entered below is what's populated: moment().tz('HERE').format('lll')
 
 ### Passcode and Meeting Link Relationship
 Search for Engage Workflow meetings in the navigation to configure. For non-administrators to see this view they must possess the `x_xma_xmatters_engage_workflow_meeting` role.
