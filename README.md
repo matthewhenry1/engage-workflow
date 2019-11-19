@@ -19,7 +19,7 @@ Download and watch: [media/conf-bridge-demo.mov](media/conf-bridge-demo.mov)
 
 Download and watch: [media/engage-demo.mov](media/engage-demo.mov)
 
-[media/assistance-request.png](media/assistance-request.png)
+![media/assistance-request.png](media/assistance-request.png)
 
 ## Install
 From within ServiceNow import the update set: [ServiceNow Update Set/xMatters Engage Workflow v1.4.xml](ServiceNow Update Set/xMatters Engage Workflow v1.4.xml)
