@@ -95,18 +95,37 @@ xMattersEngageWorkflowTask.prototype = {
         }
       }
 
-      var isConference = "false";
+      var task_is_conference_bridge = "true";
       var confBridge = rec.conference_bridge.getDisplayValue();
       if (confBridge !== 'None') {
-        isConference = "true";
         if (confBridge === 'Hosted_New') {
           xmEvent.addConferenceBridge(null);
         } else {
           xmEvent.addConferenceBridge(confBridge);
         }
+      } else {
+        task_is_conference_bridge = "false";
       }
 
-      xmEvent.addProperty('task_isConference', isConference);
+      // conference bridge details
+      xmEvent.addProperty('task_is_conference_bridge', task_is_conference_bridge);
+
+      var task_conference_bridge_type = "NONE";
+
+      if (task_is_conference_bridge === "true") {
+        task_conference_bridge_type = "INTERNAL";
+      }
+
+      var externalConfBridges = this.engage_workflow_config.ENGAGE_WORKFLOW_EXTERNAL_CONF_BRIDGE_LIST.split(';');
+      for (var ext = 0; ext < externalConfBridges.length; ext++) {
+        if (confBridge === externalConfBridges[ext]) {
+          task_conference_bridge_type = "EXTERNAL";
+        }
+      }
+
+      // used in xmatters to differentiate internal vs. external
+      xmEvent.addProperty('task_conference_bridge_type', task_conference_bridge_type);
+
       xmEvent.setPriority(rec.send_priority.getDisplayValue());
 
       xmEvent.setWebserviceURL(this.engage_workflow_config.ENGAGE_WORKFLOW_URL);
